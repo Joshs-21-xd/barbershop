@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop | Barbería Premium</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <header class="navbar">
+        <div class="logo">
+            BARBER<span>SHOP</span>
+        </div>
+
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#reservas">Reservar</a>
+        </nav>
+
+        <a href="#reservas" class="btn-reserva">
+            Reservar cita
+        </a>
+    </header>
+
+    <!-- PORTADA -->
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <p class="subtitulo">ESTILO · PRECISIÓN · PERSONALIDAD</p>
+
+            <h1>Tu estilo.<br>
+                <span>Tu identidad.</span>
+            </h1>
+
+            <p class="descripcion">
+                Más que un corte, una experiencia.
+                Encuentra tu estilo y luce tu mejor versión.
+            </p>
+
+            <a href="#servicios" class="btn-principal">
+                DESCUBRIR SERVICIOS
+            </a>
+        </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section class="servicios" id="servicios">
+        <p class="subtitulo">NUESTROS SERVICIOS</p>
+        <h2>El estilo que mereces</h2>
+
+        <div class="servicios-container">
+
+            <div class="servicio">
+                <div class="servicio-imagen corte1"></div>
+                <h3>Corte clásico</h3>
+                <p>Un estilo limpio, elegante y atemporal.</p>
+                <span>S/ 20.00</span>
+            </div>
+
+            <div class="servicio">
+                <div class="servicio-imagen corte2"></div>
+                <h3>Fade / Degradado</h3>
+                <p>Precisión, definición y estilo moderno.</p>
+                <span>S/ 25.00</span>
+            </div>
+
+            <div class="servicio">
+                <div class="servicio-imagen corte3"></div>
+                <h3>Corte + Barba</h3>
+                <p>Una combinación perfecta para tu imagen.</p>
+                <span>S/ 35.00</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- NOSOTROS -->
+    <section class="nosotros" id="nosotros">
+        <p class="subtitulo">SOBRE NOSOTROS</p>
+        <h2>La diferencia está en los detalles.</h2>
+
+        <p>
+            Creamos un espacio donde cada cliente recibe atención personalizada,
+            calidad en cada corte y una experiencia pensada para sentirse cómodo.
+        </p>
+    </section>
+
+ 
+<!-- RESERVAS -->
+<section class="reservas" id="reservas">
+
+    <p class="subtitulo">AGENDA TU VISITA</p>
+
+    <h2>Reserva tu próximo corte</h2>
+
+    <p class="texto-reserva">
+        Elige tu servicio, fecha y horario.
+        Nosotros nos encargamos del resto.
+    </p>
+
+    <div class="formulario-reserva">
+
+        <form id="formReserva">
+
+            <div class="campo">
+                <label for="servicio">Servicio</label>
+
+                <select id="servicio" required>
+                    <option value="">Selecciona tu servicio</option>
+                    <option value="Corte clásico">Corte clásico - S/ 20</option>
+                    <option value="Fade / Degradado">Fade / Degradado - S/ 25</option>
+                    <option value="Corte + Barba">Corte + Barba - S/ 35</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="fecha">Fecha de tu cita</label>
+
+                <input type="date" id="fecha" required>
+            </div>
+
+            <div class="campo">
+                <label for="hora">Horario</label>
+
+                <select id="hora" required>
+                    <option value="">Selecciona una hora</option>
+                    <option value="09:00">09:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="13:00">01:00 PM</option>
+                    <option value="14:00">02:00 PM</option>
+            </select>
+            </div>
+
+            <div class="campo">
+                <label for="nombre">Tu nombre completo</label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    placeholder="Escribe tu nombre"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="telefono">WhatsApp / Celular</label>
+
+                <input
+                    type="tel"
+                    id="telefono"
+                    placeholder="Tu número de celular"
+                    maxlength="9"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn-principal">
+                CONFIRMAR RESERVA
+            </button>
+
+        </form>
+
+        <div id="mensaje-reserva"></div>
+
+    </div>
+
+</section>
+
+
+    <!-- PIE DE PÁGINA -->
+    <footer>
+        <div class="logo">BARBER<span>SHOP</span></div>
+        <p>Tu estilo, nuestra pasión.</p>
+        <p>© 2026 Barbershop. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
