@@ -7,8 +7,10 @@
   <title>Administración | Barbershop</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       padding: 25px;
@@ -16,9 +18,11 @@
       color: #f5f5f5;
       font-family: Arial, sans-serif;
     }
+
     .contenedor { max-width: 1200px; margin: auto; }
     h1, h2 { color: #d4af37; }
     .subtitulo { color: #aaa; }
+
     .panel {
       background: #1c1c1c;
       border: 1px solid #383838;
@@ -26,6 +30,7 @@
       padding: 20px;
       margin-bottom: 22px;
     }
+
     input {
       width: 100%;
       padding: 13px;
@@ -35,6 +40,7 @@
       background: #111;
       color: white;
     }
+
     button {
       padding: 11px 16px;
       border: none;
@@ -43,15 +49,21 @@
       font-weight: bold;
       margin: 4px;
     }
+
+    button:hover { opacity: .85; }
+
     .dorado { background: #d4af37; color: #111; }
     .verde { background: #247b48; color: white; }
     .rojo { background: #a83232; color: white; }
     .gris { background: #444; color: white; }
+    .azul { background: #245b91; color: white; }
+
     .estadisticas {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 15px;
     }
+
     .tarjeta {
       background: #202020;
       border: 1px solid #393939;
@@ -59,28 +71,38 @@
       padding: 18px;
       border-radius: 10px;
     }
+
     .tarjeta p { color: #aaa; margin: 0 0 12px; }
     .tarjeta h2 { margin: 0; font-size: 25px; }
+
     .dos-columnas {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 20px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       min-width: 750px;
     }
+
     th, td {
       text-align: left;
       padding: 12px;
       border-bottom: 1px solid #393939;
     }
+
     th { color: #d4af37; }
     .tabla-contenedor { overflow-x: auto; }
     .estado { font-weight: bold; }
     .oculto { display: none; }
-    #mensaje { color: #d4af37; margin-top: 10px; }
+
+    #mensaje, #mensajeReservas {
+      color: #d4af37;
+      margin-top: 10px;
+    }
+
     .servicio-item {
       padding: 12px 0;
       border-bottom: 1px solid #393939;
@@ -88,78 +110,130 @@
       justify-content: space-between;
       gap: 10px;
     }
+
+    .estado-pendiente { color: #e9bd51; }
+    .estado-confirmada { color: #62d68b; }
+    .estado-atendida { color: #65b8ed; }
+    .estado-cancelada { color: #f08080; }
+
     @media(max-width: 750px) {
       body { padding: 12px; }
       .dos-columnas { grid-template-columns: 1fr; }
+      .panel { padding: 14px; }
     }
   </style>
 </head>
+
 <body>
+
 <div class="contenedor">
+
   <h1>✂ BARBERSHOP</h1>
   <p class="subtitulo">Panel de administración</p>
 
+  <!-- LOGIN -->
   <section id="login" class="panel">
     <h2>Iniciar sesión</h2>
-    <input type="email" id="correo" placeholder="Correo electrónico">
-    <input type="password" id="contrasena" placeholder="Contraseña">
-    <button class="dorado" onclick="iniciarSesion()">Ingresar</button>
+
+    <input type="email" id="correo"
+      placeholder="Correo electrónico">
+
+    <input type="password" id="contrasena"
+      placeholder="Contraseña">
+
+    <button class="dorado" onclick="iniciarSesion()">
+      Ingresar
+    </button>
+
     <p id="mensaje"></p>
   </section>
 
+  <!-- PANEL PRINCIPAL -->
   <section id="dashboard" class="oculto">
+
     <div class="panel">
       <h2>Resumen del negocio</h2>
-      <p class="subtitulo">Estadísticas de tus reservas e ingresos</p>
+      <p class="subtitulo">
+        Estadísticas de tus reservas e ingresos
+      </p>
+
       <div class="estadisticas">
+
         <div class="tarjeta">
           <p>Ingresos de hoy</p>
           <h2 id="ingresosHoy">S/ 0.00</h2>
         </div>
+
         <div class="tarjeta">
           <p>Ingresos del mes</p>
           <h2 id="ingresosMes">S/ 0.00</h2>
         </div>
+
         <div class="tarjeta">
           <p>Ingresos acumulados</p>
           <h2 id="ingresosTotal">S/ 0.00</h2>
         </div>
+
         <div class="tarjeta">
           <p>Total de reservas</p>
           <h2 id="totalReservas">0</h2>
         </div>
+
         <div class="tarjeta">
           <p>Reservas pendientes</p>
           <h2 id="pendientes">0</h2>
         </div>
+
         <div class="tarjeta">
           <p>Reservas confirmadas</p>
           <h2 id="confirmadas">0</h2>
         </div>
+
+        <div class="tarjeta">
+          <p>Reservas atendidas</p>
+          <h2 id="atendidas">0</h2>
+        </div>
+
         <div class="tarjeta">
           <p>Reservas canceladas</p>
           <h2 id="canceladas">0</h2>
         </div>
+
       </div>
     </div>
 
+    <!-- GRAFICOS -->
     <div class="dos-columnas">
+
       <div class="panel">
         <h2>Ingresos de los últimos 7 días</h2>
         <canvas id="graficoIngresos"></canvas>
       </div>
+
       <div class="panel">
         <h2>Servicios más solicitados</h2>
         <div id="listaServicios">Cargando...</div>
       </div>
+
     </div>
 
+    <!-- ADMINISTRAR RESERVAS -->
     <div class="panel">
+
       <h2>Administrar reservas</h2>
-      <button class="dorado" onclick="cargarReservas()">Actualizar datos</button>
-      <button class="gris" onclick="cerrarSesion()">Cerrar sesión</button>
+
+      <button class="dorado" onclick="cargarReservas()">
+        Actualizar datos
+      </button>
+
+      <button class="gris" onclick="cerrarSesion()">
+        Cerrar sesión
+      </button>
+
       <p id="mensajeReservas"></p>
+
       <div class="tabla-contenedor">
+
         <table>
           <thead>
             <tr>
@@ -173,17 +247,30 @@
               <th>Acciones</th>
             </tr>
           </thead>
+
           <tbody id="tablaReservas"></tbody>
         </table>
+
       </div>
     </div>
+
   </section>
 </div>
 
 <script>
-const SUPABASE_URL = "https://snpslziuaxmstivjeahd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_z8p71G6FH4uWz14YyFYy7w_lDv_HoZW";
-const ADMIN_UID = "7eb02455-1cef-4dc4-9d1f-c2a24a757b53";
+
+// =====================================
+// CONEXIÓN SUPABASE
+// =====================================
+
+const SUPABASE_URL =
+  "https://snpslziuaxmstivjeahd.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_z8p71G6FH4uWz14YyFYy7w_lDv_HoZW";
+
+const ADMIN_UID =
+  "7eb02455-1cef-4dc4-9d1f-c2a24a757b53";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -192,198 +279,29 @@ const supabaseClient = window.supabase.createClient(
 
 let grafico = null;
 
+// =====================================
+// FUNCIONES GENERALES
+// =====================================
+
 function dinero(valor) {
   return "S/ " + Number(valor || 0).toFixed(2);
 }
 
 function fechaLocal(fecha) {
   const d = new Date(fecha);
+
   return d.getFullYear() + "-" +
     String(d.getMonth() + 1).padStart(2, "0") + "-" +
     String(d.getDate()).padStart(2, "0");
 }
 
 function fechaIngreso(reserva) {
-  return reserva.fecha_confirmacion || reserva.creado_en || null;
-}
-
-async function iniciarSesion() {
-  const correo = document.getElementById("correo").value.trim();
-  const contrasena = document.getElementById("contrasena").value;
-  const mensaje = document.getElementById("mensaje");
-
-  mensaje.textContent = "Verificando acceso...";
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: correo,
-    password: contrasena
-  });
-
-  if (error) {
-    mensaje.textContent = "Error: " + error.message;
-    return;
-  }
-
-  if (data.user.id !== ADMIN_UID) {
-    await supabaseClient.auth.signOut();
-    mensaje.textContent = "No tienes permiso de administrador.";
-    return;
-  }
-
-  document.getElementById("login").classList.add("oculto");
-  document.getElementById("dashboard").classList.remove("oculto");
-  await cargarReservas();
-}
-
-async function comprobarSesion() {
-  const { data } = await supabaseClient.auth.getSession();
-  if (data.session && data.session.user.id === ADMIN_UID) {
-    document.getElementById("login").classList.add("oculto");
-    document.getElementById("dashboard").classList.remove("oculto");
-    await cargarReservas();
-  }
-}
-
-async function cerrarSesion() {
-  await supabaseClient.auth.signOut();
-  document.getElementById("dashboard").classList.add("oculto");
-  document.getElementById("login").classList.remove("oculto");
-  document.getElementById("contrasena").value = "";
-}
-
-async function cargarReservas() {
-  const aviso = document.getElementById("mensajeReservas");
-  aviso.textContent = "Cargando reservas...";
-
-  const { data: reservas, error } = await supabaseClient
-    .from("reservas")
-    .select("id,nombre,telefono,servicio,precio,fecha,hora,estado,fecha_confirmacion,creado_en")
-    .order("creado_en", { ascending: false });
-
-  if (error) {
-    aviso.textContent = "Error al cargar: " + error.message;
-    return;
-  }
-
-  mostrarReservas(reservas || []);
-  calcularEstadisticas(reservas || []);
-  aviso.textContent = "Datos actualizados correctamente.";
-}
-
-function calcularEstadisticas(reservas) {
-  const hoy = fechaLocal(new Date());
-  const ahora = new Date();
-  const mes = ahora.getFullYear() + "-" +
-    String(ahora.getMonth() + 1).padStart(2, "0");
-
-  const confirmadas = reservas.filter(r => r.estado === "confirmada");
-  const pendientes = reservas.filter(r => r.estado === "pendiente");
-  const canceladas = reservas.filter(r => r.estado === "cancelada");
-
-  let ingresoHoy = 0;
-  let ingresoMes = 0;
-  let ingresoTotal = 0;
-
-  confirmadas.forEach(r => {
-    const fecha = fechaIngreso(r);
-    if (!fecha) return;
-
-    const d = new Date(fecha);
-    const importe = Number(r.precio) || 0;
-    const fechaDia = fechaLocal(d);
-
-    ingresoTotal += importe;
-    if (fechaDia === hoy) ingresoHoy += importe;
-    if (fechaDia.substring(0, 7) === mes) ingresoMes += importe;
-  });
-
-  document.getElementById("ingresosHoy").textContent = dinero(ingresoHoy);
-  document.getElementById("ingresosMes").textContent = dinero(ingresoMes);
-  document.getElementById("ingresosTotal").textContent = dinero(ingresoTotal);
-  document.getElementById("totalReservas").textContent = reservas.length;
-  document.getElementById("pendientes").textContent = pendientes.length;
-  document.getElementById("confirmadas").textContent = confirmadas.length;
-  document.getElementById("canceladas").textContent = canceladas.length;
-
-  mostrarGrafico(confirmadas);
-  mostrarServicios(reservas);
-}
-
-function mostrarGrafico(confirmadas) {
-  const etiquetas = [];
-  const valores = [];
-  const hoy = new Date();
-
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(hoy);
-    d.setDate(hoy.getDate() - i);
-    const clave = fechaLocal(d);
-    etiquetas.push(d.toLocaleDateString("es-PE", {
-      day: "2-digit", month: "2-digit"
-    }));
-
-    const total = confirmadas.reduce((suma, r) => {
-      const fecha = fechaIngreso(r);
-      return fecha && fechaLocal(new Date(fecha)) === clave
-        ? suma + (Number(r.precio) || 0)
-        : suma;
-    }, 0);
-
-    valores.push(total);
-  }
-
-  const ctx = document.getElementById("graficoIngresos");
-  if (grafico) grafico.destroy();
-
-  grafico = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: etiquetas,
-      datasets: [{
-        label: "Ingresos en S/",
-        data: valores,
-        backgroundColor: "#d4af37",
-        borderRadius: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: "#fff" } }
-      },
-      scales: {
-        x: { ticks: { color: "#fff" }, grid: { color: "#333" } },
-        y: { beginAtZero: true, ticks: { color: "#fff" }, grid: { color: "#333" } }
-      }
-    }
-  });
-}
-
-function mostrarServicios(reservas) {
-  const conteo = {};
-
-  reservas.forEach(r => {
-    const nombre = r.servicio || "Sin servicio";
-    conteo[nombre] = (conteo[nombre] || 0) + 1;
-  });
-
-  const ordenados = Object.entries(conteo)
-    .sort((a, b) => b[1] - a[1]);
-
-  const lista = document.getElementById("listaServicios");
-
-  if (!ordenados.length) {
-    lista.textContent = "Todavía no hay servicios registrados.";
-    return;
-  }
-
-  lista.innerHTML = ordenados.map(([nombre, cantidad]) =>
-    `<div class="servicio-item"><span>${escaparHTML(nombre)}</span><strong>${cantidad}</strong></div>`
-  ).join("");
+  return reserva.fecha_confirmacion ||
+    reserva.creado_en || null;
 }
 
 function escaparHTML(valor) {
-  return String(valor).replace(/[&<>"']/g, c => ({
+  return String(valor ?? "").replace(/[&<>"']/g, c => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -392,65 +310,495 @@ function escaparHTML(valor) {
   })[c]);
 }
 
+// =====================================
+// INICIAR SESIÓN
+// =====================================
+
+async function iniciarSesion() {
+
+  const correo =
+    document.getElementById("correo").value.trim();
+
+  const contrasena =
+    document.getElementById("contrasena").value;
+
+  const mensaje =
+    document.getElementById("mensaje");
+
+  mensaje.textContent = "Verificando acceso...";
+
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: correo,
+      password: contrasena
+    });
+
+  if (error) {
+    mensaje.textContent = "Error: " + error.message;
+    return;
+  }
+
+  if (data.user.id !== ADMIN_UID) {
+    await supabaseClient.auth.signOut();
+
+    mensaje.textContent =
+      "No tienes permiso de administrador.";
+
+    return;
+  }
+
+  document.getElementById("login")
+    .classList.add("oculto");
+
+  document.getElementById("dashboard")
+    .classList.remove("oculto");
+
+  await cargarReservas();
+}
+
+// =====================================
+// COMPROBAR SESIÓN
+// =====================================
+
+async function comprobarSesion() {
+
+  const { data } =
+    await supabaseClient.auth.getSession();
+
+  if (
+    data.session &&
+    data.session.user.id === ADMIN_UID
+  ) {
+    document.getElementById("login")
+      .classList.add("oculto");
+
+    document.getElementById("dashboard")
+      .classList.remove("oculto");
+
+    await cargarReservas();
+  }
+}
+
+// =====================================
+// CERRAR SESIÓN
+// =====================================
+
+async function cerrarSesion() {
+
+  await supabaseClient.auth.signOut();
+
+  document.getElementById("dashboard")
+    .classList.add("oculto");
+
+  document.getElementById("login")
+    .classList.remove("oculto");
+
+  document.getElementById("contrasena").value = "";
+}
+
+// =====================================
+// CARGAR RESERVAS
+// =====================================
+
+async function cargarReservas() {
+
+  const aviso =
+    document.getElementById("mensajeReservas");
+
+  aviso.textContent = "Cargando reservas...";
+
+  const { data: reservas, error } =
+    await supabaseClient
+      .from("reservas")
+      .select(
+        "id,nombre,telefono,servicio,precio,fecha,hora,estado,fecha_confirmacion,creado_en"
+      )
+      .order("creado_en", { ascending: false });
+
+  if (error) {
+    aviso.textContent =
+      "Error al cargar: " + error.message;
+    return;
+  }
+
+  mostrarReservas(reservas || []);
+  calcularEstadisticas(reservas || []);
+
+  aviso.textContent =
+    "Datos actualizados correctamente.";
+}
+
+// =====================================
+// ESTADÍSTICAS
+// =====================================
+
+function calcularEstadisticas(reservas) {
+
+  const hoy = fechaLocal(new Date());
+
+  const ahora = new Date();
+
+  const mes = ahora.getFullYear() + "-" +
+    String(ahora.getMonth() + 1).padStart(2, "0");
+
+  const confirmadas =
+    reservas.filter(r => r.estado === "confirmada");
+
+  const pendientes =
+    reservas.filter(r => r.estado === "pendiente");
+
+  const atendidas =
+    reservas.filter(r => r.estado === "atendida");
+
+  const canceladas =
+    reservas.filter(r => r.estado === "cancelada");
+
+  // Las reservas confirmadas y atendidas cuentan
+  // como ingresos del negocio.
+
+  const generadoras = reservas.filter(r =>
+    ["confirmada", "atendida"].includes(r.estado)
+  );
+
+  let ingresoHoy = 0;
+  let ingresoMes = 0;
+  let ingresoTotal = 0;
+
+  generadoras.forEach(r => {
+
+    const fecha = fechaIngreso(r);
+
+    if (!fecha) return;
+
+    const d = new Date(fecha);
+
+    const importe = Number(r.precio) || 0;
+
+    const fechaDia = fechaLocal(d);
+
+    ingresoTotal += importe;
+
+    if (fechaDia === hoy) {
+      ingresoHoy += importe;
+    }
+
+    if (fechaDia.substring(0, 7) === mes) {
+      ingresoMes += importe;
+    }
+  });
+
+  document.getElementById("ingresosHoy").textContent =
+    dinero(ingresoHoy);
+
+  document.getElementById("ingresosMes").textContent =
+    dinero(ingresoMes);
+
+  document.getElementById("ingresosTotal").textContent =
+    dinero(ingresoTotal);
+
+  document.getElementById("totalReservas").textContent =
+    reservas.length;
+
+  document.getElementById("pendientes").textContent =
+    pendientes.length;
+
+  document.getElementById("confirmadas").textContent =
+    confirmadas.length;
+
+  document.getElementById("atendidas").textContent =
+    atendidas.length;
+
+  document.getElementById("canceladas").textContent =
+    canceladas.length;
+
+  mostrarGrafico(generadoras);
+  mostrarServicios(reservas);
+}
+
+// =====================================
+// GRÁFICO DE INGRESOS
+// =====================================
+
+function mostrarGrafico(generadoras) {
+
+  const etiquetas = [];
+  const valores = [];
+
+  const hoy = new Date();
+
+  for (let i = 6; i >= 0; i--) {
+
+    const d = new Date(hoy);
+
+    d.setDate(hoy.getDate() - i);
+
+    const clave = fechaLocal(d);
+
+    etiquetas.push(
+      d.toLocaleDateString("es-PE", {
+        day: "2-digit",
+        month: "2-digit"
+      })
+    );
+
+    const total = generadoras.reduce((suma, r) => {
+
+      const fecha = fechaIngreso(r);
+
+      return fecha &&
+        fechaLocal(new Date(fecha)) === clave
+        ? suma + (Number(r.precio) || 0)
+        : suma;
+
+    }, 0);
+
+    valores.push(total);
+  }
+
+  const ctx =
+    document.getElementById("graficoIngresos");
+
+  if (grafico) grafico.destroy();
+
+  grafico = new Chart(ctx, {
+    type: "bar",
+
+    data: {
+      labels: etiquetas,
+
+      datasets: [{
+        label: "Ingresos en S/",
+        data: valores,
+        backgroundColor: "#d4af37",
+        borderRadius: 6
+      }]
+    },
+
+    options: {
+      responsive: true,
+
+      plugins: {
+        legend: {
+          labels: { color: "#fff" }
+        }
+      },
+
+      scales: {
+        x: {
+          ticks: { color: "#fff" },
+          grid: { color: "#333" }
+        },
+
+        y: {
+          beginAtZero: true,
+          ticks: { color: "#fff" },
+          grid: { color: "#333" }
+        }
+      }
+    }
+  });
+}
+
+// =====================================
+// SERVICIOS MÁS SOLICITADOS
+// =====================================
+
+function mostrarServicios(reservas) {
+
+  const conteo = {};
+
+  reservas
+    .filter(r => r.estado !== "cancelada")
+    .forEach(r => {
+
+      const nombre = r.servicio || "Sin servicio";
+
+      conteo[nombre] =
+        (conteo[nombre] || 0) + 1;
+    });
+
+  const ordenados =
+    Object.entries(conteo)
+      .sort((a, b) => b[1] - a[1]);
+
+  const lista =
+    document.getElementById("listaServicios");
+
+  if (!ordenados.length) {
+
+    lista.textContent =
+      "Todavía no hay servicios registrados.";
+
+    return;
+  }
+
+  lista.innerHTML = ordenados.map(
+    ([nombre, cantidad]) =>
+      `<div class="servicio-item">
+        <span>${escaparHTML(nombre)}</span>
+        <strong>${cantidad}</strong>
+      </div>`
+  ).join("");
+}
+
+// =====================================
+// MOSTRAR RESERVAS
+// =====================================
+
 function mostrarReservas(reservas) {
-  const tabla = document.getElementById("tablaReservas");
+
+  const tabla =
+    document.getElementById("tablaReservas");
 
   if (!reservas.length) {
-    tabla.innerHTML = '<tr><td colspan="8">No hay reservas registradas.</td></tr>';
+
+    tabla.innerHTML =
+      '<tr><td colspan="8">No hay reservas registradas.</td></tr>';
+
     return;
   }
 
   tabla.innerHTML = reservas.map(r => {
+
     let botones = "";
 
     if (r.estado === "pendiente") {
+
       botones = `
-        <button class="verde" onclick="cambiarEstado('${r.id}','confirmada')">Confirmar</button>
-        <button class="rojo" onclick="cambiarEstado('${r.id}','cancelada')">Cancelar</button>
+        <button class="verde"
+          onclick="cambiarEstado('${r.id}','confirmada')">
+          Confirmar
+        </button>
+
+        <button class="rojo"
+          onclick="cambiarEstado('${r.id}','cancelada')">
+          Cancelar
+        </button>
       `;
+
     } else if (r.estado === "confirmada") {
-      botones = '<span style="color:#62d68b">Confirmada</span>';
-    } else {
-      botones = '<span style="color:#f08080">Cancelada</span>';
+
+      botones = `
+        <button class="azul"
+          onclick="cambiarEstado('${r.id}','atendida')">
+          Marcar atendida
+        </button>
+
+        <button class="rojo"
+          onclick="cambiarEstado('${r.id}','cancelada')">
+          Cancelar
+        </button>
+      `;
+
+    } else if (r.estado === "atendida") {
+
+      botones = `
+        <span class="estado-atendida">
+          ✓ Servicio realizado
+        </span>
+      `;
+
+    } else if (r.estado === "cancelada") {
+
+      botones = `
+        <span class="estado-cancelada">
+          ✕ Reserva cancelada
+        </span>
+      `;
     }
+
+    const claseEstado = {
+      pendiente: "estado-pendiente",
+      confirmada: "estado-confirmada",
+      atendida: "estado-atendida",
+      cancelada: "estado-cancelada"
+    }[r.estado] || "";
 
     return `
       <tr>
+
         <td>${escaparHTML(r.nombre)}</td>
+
         <td>${escaparHTML(r.telefono)}</td>
+
         <td>${escaparHTML(r.servicio)}</td>
+
         <td>${dinero(r.precio)}</td>
+
         <td>${escaparHTML(r.fecha)}</td>
+
         <td>${escaparHTML(r.hora)}</td>
-        <td class="estado">${escaparHTML(r.estado)}</td>
+
+        <td class="estado ${claseEstado}">
+          ${escaparHTML(r.estado)}
+        </td>
+
         <td>${botones}</td>
+
       </tr>
     `;
+
   }).join("");
 }
 
+// =====================================
+// CAMBIAR ESTADO DE UNA RESERVA
+// =====================================
+
 async function cambiarEstado(id, estado) {
-  const pregunta = estado === "confirmada"
-    ? "¿Deseas confirmar esta reserva?"
-    : "¿Deseas cancelar esta reserva?";
+
+  const mensajes = {
+    confirmada: "¿Deseas confirmar esta reserva?",
+    atendida: "¿Deseas marcar esta reserva como atendida?",
+    cancelada: "¿Deseas cancelar esta reserva?"
+  };
+
+  const pregunta = mensajes[estado];
+
+  if (!pregunta) return;
 
   if (!confirm(pregunta)) return;
 
+  const aviso =
+    document.getElementById("mensajeReservas");
+
+  aviso.textContent = "Actualizando reserva...";
+
+  const cambios = { estado };
+
+  // Guardar la fecha de confirmación
+  // para el registro de ingresos.
+
+  if (estado === "confirmada") {
+    cambios.fecha_confirmacion = new Date().toISOString();
+  }
+
   const { error } = await supabaseClient
     .from("reservas")
-    .update({ estado })
+    .update(cambios)
     .eq("id", id);
 
   if (error) {
+
     alert("No se pudo actualizar: " + error.message);
+
+    aviso.textContent = "Error al actualizar.";
+
     return;
   }
 
   alert("Reserva actualizada correctamente.");
+
   await cargarReservas();
 }
 
+// =====================================
+// INICIAR PANEL
+// =====================================
+
 comprobarSesion();
+
 </script>
+
 </body>
 </html>
