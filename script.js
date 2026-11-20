@@ -74,10 +74,11 @@ const supabaseClient = supabase.createClient(
 
         try {
             const { data, error } = await supabaseClient
-                .from("reservas")
-                .select("hora")
-                .eq("fecha", fechaSeleccionada);
-
+    .from("reservas")
+    .select("hora")
+    .eq("fecha", fechaSeleccionada)
+    .neq("estado", "cancelada")
+    .neq("estado", "atendida");
             if (error) throw error;
 
             if (consulta !== consultaActual) return;
