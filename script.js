@@ -75,18 +75,17 @@ formulario.addEventListener("submit", async function(event) {
 
     try {
         // Guardar reserva en Supabase
-        const { data, error } = await supabaseClient
-            .from("reservas")
-            .insert([{
-                nombre: nombre,
-                telefono: telefono,
-                servicio: servicio,
-                precio: precio,
-                fecha: fecha,
-                hora: hora,
-                estado: "pendiente"
-            }])
-            .select();
+        const { error } = await supabaseClient
+    .from("reservas")
+    .insert([{
+        nombre,
+        telefono,
+        servicio,
+        precio,
+        fecha,
+        hora,
+        estado: "pendiente"
+    }]);
 
         if (error) {
             if (error.code === "23505") {
