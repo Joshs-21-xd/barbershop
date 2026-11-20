@@ -7,7 +7,7 @@ const SUPABASE_URL = "https://snpslziuaxmstivjeahd.supabase.co";
 
 const SUPABASE_KEY = "sb_publishable_z8p71G6FH4uWz14YyFYy7w_lDv_HoZW";
 
-const supabaseClient = window.supabase.createClient(
+const supabaseClient = supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
@@ -143,4 +143,3 @@ formulario.addEventListener("submit", async function(event) {
         block: "center"
     });
 });
-    
