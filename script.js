@@ -20,14 +20,22 @@ const supabaseClient = supabase.createClient(
     const fechaInput = document.getElementById("fecha");
     const horaSelect = document.getElementById("hora");
 
-    const listaHorarios = [
-        { valor: "09:00", texto: "09:00 AM" },
-        { valor: "10:00", texto: "10:00 AM" },
-        { valor: "11:00", texto: "11:00 AM" },
-        { valor: "12:00", texto: "12:00 PM" },
-        { valor: "13:00", texto: "01:00 PM" },
-        { valor: "14:00", texto: "02:00 PM" }
-    ];
+   const listaHorarios = [
+    { valor: "09:00", texto: "09:00 AM" },
+    { valor: "10:00", texto: "10:00 AM" },
+    { valor: "11:00", texto: "11:00 AM" },
+    { valor: "12:00", texto: "12:00 PM" },
+    { valor: "13:00", texto: "01:00 PM" },
+    { valor: "14:00", texto: "02:00 PM" },
+    { valor: "15:00", texto: "03:00 PM" },
+    { valor: "16:00", texto: "04:00 PM" },
+    { valor: "17:00", texto: "05:00 PM" },
+    { valor: "18:00", texto: "06:00 PM" },
+    { valor: "19:00", texto: "07:00 PM" },
+    { valor: "20:00", texto: "08:00 PM" },
+    { valor: "21:00", texto: "09:00 PM" },
+    { valor: "22:00", texto: "10:00 PM" }
+];
 
     function mostrarHorarios(ocupados = []) {
         horaSelect.innerHTML = "";
