@@ -1,5 +1,18 @@
 
 // ==================================
+// CONEXIÓN CON SUPABASE
+// ==================================
+
+const SUPABASE_URL = "https://snpslziuaxmstivjeahd.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_z8p71G6FH4uWz14YyFYy7w_lDv_HoZW";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+// ==================================
 // CONFIGURACIÓN DEL FORMULARIO
 // ==================================
 
@@ -15,11 +28,18 @@ const dia = String(hoy.getDate()).padStart(2, "0");
 
 fechaInput.min = `${anio}-${mes}-${dia}`;
 
+// Precios de los servicios
+const precios = {
+    "Corte clásico": 20,
+    "Fade / Degradado": 25,
+    "Corte + Barba": 35
+};
+
 // ==================================
 // PROCESAR SOLICITUD DE RESERVA
 // ==================================
 
-formulario.addEventListener("submit", function(event) {
+formulario.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const servicio = document.getElementById("servicio").value;
@@ -28,50 +48,99 @@ formulario.addEventListener("submit", function(event) {
     const nombre = document.getElementById("nombre").value.trim();
     const telefono = document.getElementById("telefono").value.trim();
 
-    // Validar número de celular peruano
+    // Validar celular peruano
     if (!/^9\d{8}$/.test(telefono)) {
         mensaje.innerHTML = `
             <p style="color:#ff7777;">
-                Ingresa un celular válido de 9 dígitos que comience con 9.
+                Ingresa un celular válido de 9 dígitos.
             </p>
         `;
         return;
     }
 
-    // Mostrar resumen de la solicitud
-    const fechaBonita = fecha.split("-").reverse().join("/");
+    if (!precios[servicio]) {
+        mensaje.innerHTML = `<p style="color:#ff7777;">Selecciona un servicio válido.</p>`;
+        return;
+    }
 
-    mensaje.innerHTML = `
-        <div style="
-            background:#191919;
-            border:1px solid #c8a45d;
-            border-radius:10px;
-            padding:25px;
-            margin-top:20px;
-            text-align:left;
-        ">
-            <h3 style="color:#d5ad65; margin-bottom:15px;">
-                ¡Solicitud preparada!
-            </h3>
+    const precio = precios[servicio];
 
-            <p>✂️ Servicio: ${servicio}</p>
-            <p>📅 Fecha: ${fechaBonita}</p>
-            <p>🕒 Hora: ${hora}</p>
-            <p>👤 Cliente: ${nombre}</p>
-            <p>📱 Celular: ${telefono}</p>
+    // Evitar doble envío
+    const boton = formulario.querySelector('button[type="submit"]');
+    boton.disabled = true;
+    boton.textContent = "GUARDANDO RESERVA...";
 
-            <p style="
-                color:#d5ad65;
-                margin-top:18px;
-                font-size:13px;
+    mensaje.innerHTML = "";
+
+    try {
+        // Guardar reserva en Supabase
+        const { data, error } = await supabaseClient
+            .from("reservas")
+            .insert([{
+                nombre: nombre,
+                telefono: telefono,
+                servicio: servicio,
+                precio: precio,
+                fecha: fecha,
+                hora: hora,
+                estado: "pendiente"
+            }])
+            .select();
+
+        if (error) {
+            if (error.code === "23505") {
+                throw new Error("Ese horario ya está reservado. Elige otra hora.");
+            }
+            throw error;
+        }
+
+        const fechaBonita = fecha.split("-").reverse().join("/");
+
+        mensaje.innerHTML = `
+            <div style="
+                background:#191919;
+                border:1px solid #c8a45d;
+                border-radius:10px;
+                padding:25px;
+                margin-top:20px;
+                text-align:left;
             ">
-                Esta es una vista previa. Tu cita todavía no está confirmada.
+                <h3 style="color:#d5ad65;">
+                    ¡Reserva registrada!
+                </h3>
+
+                <p>✂️ Servicio: ${servicio}</p>
+                <p>💰 Precio: S/ ${precio}</p>
+                <p>📅 Fecha: ${fechaBonita}</p>
+                <p>🕒 Hora: ${hora}</p>
+                <p>👤 Cliente: ${nombre}</p>
+                <p>📱 Celular: ${telefono}</p>
+
+                <p style="color:#d5ad65; margin-top:18px;">
+                    Tu solicitud fue guardada correctamente.
+                    Está pendiente de confirmación.
+                </p>
+            </div>
+        `;
+
+        formulario.reset();
+
+    } catch (error) {
+        console.error("Error al guardar reserva:", error);
+
+        mensaje.innerHTML = `
+            <p style="color:#ff7777;">
+                ${error.message || "No se pudo guardar la reserva. Inténtalo nuevamente."}
             </p>
-        </div>
-    `;
+        `;
+    } finally {
+        boton.disabled = false;
+        boton.textContent = "CONFIRMAR RESERVA";
+    }
 
     mensaje.scrollIntoView({
         behavior: "smooth",
         block: "center"
     });
 });
+    
