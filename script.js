@@ -40,6 +40,7 @@ const precios = {
 // ==================================
 
 formulario.addEventListener("submit", async function(event) {
+    console.log("FORMULARIO ENVIADO CORRECTAMENTE");
     event.preventDefault();
 
     const servicio = document.getElementById("servicio").value;
