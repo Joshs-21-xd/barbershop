@@ -1,0 +1,443 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Barbershop</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #101010;
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #080808;
+            border-bottom: 1px solid #c49a45;
+            padding: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #d6ad55;
+            font-size: 23px;
+        }
+
+        .gold {
+            color: #d6ad55;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 25px 16px;
+        }
+
+        .login-box {
+            max-width: 400px;
+            margin: 65px auto;
+            padding: 30px;
+            background: #1b1b1b;
+            border: 1px solid #b58b3b;
+            border-radius: 12px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #d6ad55;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            margin: 9px 0 16px;
+            background: #292929;
+            border: 1px solid #555;
+            border-radius: 6px;
+            color: white;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            padding: 11px 15px;
+            font-weight: bold;
+        }
+
+        .btn-gold {
+            background: #c49a45;
+            color: #111;
+            width: 100%;
+        }
+
+        .btn-logout {
+            background: #333;
+            color: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat {
+            background: #1c1c1c;
+            border: 1px solid #3d3321;
+            padding: 22px;
+            border-radius: 10px;
+        }
+
+        .stat p {
+            color: #aaa;
+            margin-bottom: 12px;
+        }
+
+        .stat strong {
+            font-size: 28px;
+            color: #d6ad55;
+        }
+
+        .table-box {
+            background: #1b1b1b;
+            border-radius: 10px;
+            padding: 18px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th, td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #393939;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            color: #d6ad55;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .confirmar {
+            background: #247c45;
+            color: white;
+        }
+
+        .cancelar {
+            background: #9b3030;
+            color: white;
+        }
+
+        .estado {
+            color: #d6ad55;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #mensaje {
+            margin-top: 12px;
+            color: #ff8888;
+            font-size: 14px;
+        }
+
+        @media(max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 18px;
+            }
+
+            main {
+                padding: 18px 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>✂ BARBERSHOP <span class="gold">ADMIN</span></h1>
+    <button id="btnSalir" class="btn-logout hidden">Cerrar sesión</button>
+</header>
+
+<main>
+
+    <section id="login" class="login-box">
+        <h2>Acceso administrador</h2>
+
+        <form id="formLogin">
+            <label>Correo electrónico</label>
+            <input type="email" id="correo" required
+                   placeholder="Tu correo de administrador">
+
+            <label>Contraseña</label>
+            <input type="password" id="contrasena" required
+                   placeholder="Tu contraseña">
+
+            <button class="btn-gold" type="submit">
+                INICIAR SESIÓN
+            </button>
+        </form>
+
+        <p id="mensaje"></p>
+    </section>
+
+    <section id="panel" class="hidden">
+
+        <h2>Panel de administración</h2>
+        <p>Bienvenido. Aquí puedes gestionar las citas de tus clientes.</p>
+
+        <div class="stats">
+            <div class="stat">
+                <p>Total de reservas</p>
+                <strong id="total">0</strong>
+            </div>
+
+            <div class="stat">
+                <p>Pendientes</p>
+                <strong id="pendientes">0</strong>
+            </div>
+
+            <div class="stat">
+                <p>Confirmadas</p>
+                <strong id="confirmadas">0</strong>
+            </div>
+        </div>
+
+        <div class="table-box">
+            <h2>Reservas recibidas</h2>
+
+            <p id="estadoCarga">Cargando reservas...</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Teléfono</th>
+                        <th>Servicio</th>
+                        <th>Precio</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="listaReservas"></tbody>
+            </table>
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+    const SUPABASE_URL = "https://snpslziuaxmstivjeahd.supabase.co";
+
+    const SUPABASE_KEY = "sb_publishable_z8p71G6FH4uWz14YyFYy7w_lDv_HoZW";
+
+    const ADMIN_ID = "7eb02455-1cef-4dc4-9d1f-c2a24a757b53";
+
+    const db = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+    const login = document.getElementById("login");
+    const panel = document.getElementById("panel");
+    const mensaje = document.getElementById("mensaje");
+    const lista = document.getElementById("listaReservas");
+
+    function mostrarPanel() {
+        login.classList.add("hidden");
+        panel.classList.remove("hidden");
+        document.getElementById("btnSalir").classList.remove("hidden");
+    }
+
+    function mostrarLogin() {
+        login.classList.remove("hidden");
+        panel.classList.add("hidden");
+        document.getElementById("btnSalir").classList.add("hidden");
+    }
+
+    async function verificarAdministrador() {
+        const { data, error } = await db.auth.getSession();
+
+        if (error || !data.session) {
+            mostrarLogin();
+            return;
+        }
+
+        if (data.session.user.id !== ADMIN_ID) {
+            await db.auth.signOut();
+            mostrarLogin();
+            mensaje.textContent = "Esta cuenta no tiene permiso de administrador.";
+            return;
+        }
+
+        mostrarPanel();
+        cargarReservas();
+    }
+
+    document.getElementById("formLogin").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        mensaje.textContent = "Verificando acceso...";
+
+        const email = document.getElementById("correo").value.trim();
+        const password = document.getElementById("contrasena").value;
+
+        const { data, error } = await db.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            mensaje.textContent = "Error: " + error.message;
+            return;
+        }
+
+        if (data.user.id !== ADMIN_ID) {
+            await db.auth.signOut();
+            mensaje.textContent = "Esta cuenta no es el administrador autorizado.";
+            return;
+        }
+
+        mensaje.textContent = "";
+        mostrarPanel();
+        cargarReservas();
+    });
+
+    async function cargarReservas() {
+        document.getElementById("estadoCarga").textContent = "Cargando reservas...";
+        lista.replaceChildren();
+
+        const { data, error } = await db
+            .from("reservas")
+            .select("id,nombre,telefono,servicio,precio,fecha,hora,estado")
+            .order("fecha", { ascending: true });
+
+        if (error) {
+            document.getElementById("estadoCarga").textContent =
+                "No se pudieron cargar las reservas: " + error.message;
+            return;
+        }
+
+        document.getElementById("estadoCarga").textContent =
+            data.length ? "" : "Todavía no hay reservas.";
+
+        document.getElementById("total").textContent = data.length;
+
+        document.getElementById("pendientes").textContent =
+            data.filter(r => r.estado === "pendiente").length;
+
+        document.getElementById("confirmadas").textContent =
+            data.filter(r => r.estado === "confirmada").length;
+
+        data.forEach(reserva => {
+            const fila = document.createElement("tr");
+
+            const valores = [
+                reserva.nombre,
+                reserva.telefono,
+                reserva.servicio,
+                "S/ " + reserva.precio,
+                reserva.fecha,
+                reserva.hora,
+                reserva.estado
+            ];
+
+            valores.forEach((valor, indice) => {
+                const celda = document.createElement("td");
+                celda.textContent = valor ?? "";
+                if (indice === 6) celda.className = "estado";
+                fila.appendChild(celda);
+            });
+
+            const acciones = document.createElement("td");
+            acciones.className = "actions";
+
+            if (reserva.estado === "pendiente") {
+                const aceptar = document.createElement("button");
+                aceptar.textContent = "Confirmar";
+                aceptar.className = "confirmar";
+                aceptar.addEventListener("click", () =>
+                    cambiarEstado(reserva.id, "confirmada")
+                );
+
+                const cancelar = document.createElement("button");
+                cancelar.textContent = "Cancelar";
+                cancelar.className = "cancelar";
+                cancelar.addEventListener("click", () =>
+                    cambiarEstado(reserva.id, "cancelada")
+                );
+
+                acciones.append(aceptar, cancelar);
+            } else {
+                acciones.textContent = "Sin acciones";
+            }
+
+            fila.appendChild(acciones);
+            lista.appendChild(fila);
+        });
+    }
+
+    async function cambiarEstado(id, nuevoEstado) {
+        const accion = nuevoEstado === "confirmada" ? "confirmar" : "cancelar";
+
+        if (!confirm("¿Deseas " + accion + " esta reserva?")) return;
+
+        const { error } = await db
+            .from("reservas")
+            .update({ estado: nuevoEstado })
+            .eq("id", id);
+
+        if (error) {
+            alert("No se pudo actualizar: " + error.message);
+            return;
+        }
+
+        alert("Reserva actualizada correctamente.");
+        cargarReservas();
+    }
+
+    document.getElementById("btnSalir").addEventListener("click", async () => {
+        await db.auth.signOut();
+        mostrarLogin();
+    });
+
+    verificarAdministrador();
+</script>
+
+</body>
+</html>
