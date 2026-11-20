@@ -12,6 +12,99 @@ const supabaseClient = supabase.createClient(
     SUPABASE_KEY
 );
 
+// =====================================
+// HORARIOS DISPONIBLES AUTOMÁTICAMENTE
+// =====================================
+
+(() => {
+    const fechaInput = document.getElementById("fecha");
+    const horaSelect = document.getElementById("hora");
+
+    const listaHorarios = [
+        { valor: "09:00", texto: "09:00 AM" },
+        { valor: "10:00", texto: "10:00 AM" },
+        { valor: "11:00", texto: "11:00 AM" },
+        { valor: "12:00", texto: "12:00 PM" },
+        { valor: "13:00", texto: "01:00 PM" },
+        { valor: "14:00", texto: "02:00 PM" }
+    ];
+
+    function mostrarHorarios(ocupados = []) {
+        horaSelect.innerHTML = "";
+
+        const inicio = document.createElement("option");
+        inicio.value = "";
+        inicio.textContent = "Selecciona una hora";
+        horaSelect.appendChild(inicio);
+
+        const disponibles = listaHorarios.filter(
+            horario => !ocupados.includes(horario.valor)
+        );
+
+        disponibles.forEach(horario => {
+            const opcion = document.createElement("option");
+            opcion.value = horario.valor;
+            opcion.textContent = horario.texto;
+            horaSelect.appendChild(opcion);
+        });
+
+        if (disponibles.length === 0) {
+            const opcion = document.createElement("option");
+            opcion.value = "";
+            opcion.textContent = "No hay horarios disponibles";
+            horaSelect.appendChild(opcion);
+        }
+    }
+
+    let consultaActual = 0;
+
+    fechaInput.addEventListener("change", async () => {
+        const fechaSeleccionada = fechaInput.value;
+        const consulta = ++consultaActual;
+
+        if (!fechaSeleccionada) {
+            mostrarHorarios();
+            horaSelect.disabled = false;
+            return;
+        }
+
+        horaSelect.disabled = true;
+        horaSelect.innerHTML =
+            '<option value="">Consultando horarios...</option>';
+
+        try {
+            const { data, error } = await supabaseClient
+                .from("reservas")
+                .select("hora")
+                .eq("fecha", fechaSeleccionada);
+
+            if (error) throw error;
+
+            if (consulta !== consultaActual) return;
+
+            const ocupados = data.map(reserva =>
+                String(reserva.hora).slice(0, 5)
+            );
+
+            mostrarHorarios(ocupados);
+            horaSelect.disabled = false;
+
+        } catch (error) {
+            console.error("Error consultando horarios:", error);
+
+            if (consulta !== consultaActual) return;
+
+            horaSelect.innerHTML =
+                '<option value="">Error al consultar horarios</option>';
+            horaSelect.disabled = true;
+
+            alert("No se pudieron consultar los horarios. Intenta nuevamente.");
+        }
+    });
+
+    mostrarHorarios();
+})();
+
 // ==================================
 // CONFIGURACIÓN DEL FORMULARIO
 // ==================================
