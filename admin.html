@@ -112,6 +112,31 @@
     }
 
     .estado-pendiente { color: #e9bd51; }
+
+.filtros-reservas {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 10px;
+  margin: 18px 0;
+  align-items: center;
+}
+
+.filtros-reservas input,
+.filtros-reservas select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 7px;
+  background: #111;
+  color: white;
+}
+
+@media(max-width: 750px) {
+  .filtros-reservas {
+    grid-template-columns: 1fr;
+  }
+}
+
     .estado-confirmada { color: #62d68b; }
     .estado-atendida { color: #65b8ed; }
     .estado-cancelada { color: #f08080; }
@@ -230,9 +255,40 @@
         Cerrar sesión
       </button>
 
-      <p id="mensajeReservas"></p>
+      
+<p id="mensajeReservas"></p>
 
-      <div class="tabla-contenedor">
+<!-- FILTROS DE RESERVAS -->
+<div class="filtros-reservas">
+
+  <input
+    type="text"
+    id="buscarCliente"
+    placeholder="🔎 Buscar por nombre o teléfono..."
+    oninput="aplicarFiltros()"
+  >
+
+  <input
+    type="date"
+    id="filtrarFecha"
+    onchange="aplicarFiltros()"
+  >
+
+  <select id="filtrarEstado" onchange="aplicarFiltros()">
+    <option value="">Todos los estados</option>
+    <option value="pendiente">Pendientes</option>
+    <option value="confirmada">Confirmadas</option>
+    <option value="atendida">Atendidas</option>
+    <option value="cancelada">Canceladas</option>
+  </select>
+
+  <button class="gris" onclick="limpiarFiltros()">
+    Limpiar filtros
+  </button>
+
+</div>
+
+<div class="tabla-contenedor">
 
         <table>
           <thead>
@@ -278,6 +334,7 @@ const supabaseClient = window.supabase.createClient(
 );
 
 let grafico = null;
+let reservasGlobales = [];
 
 // =====================================
 // FUNCIONES GENERALES
@@ -420,6 +477,7 @@ async function cargarReservas() {
       "Error al cargar: " + error.message;
     return;
   }
+  reservasGlobales = reservas || [];
 
   mostrarReservas(reservas || []);
   calcularEstadisticas(reservas || []);
@@ -639,6 +697,55 @@ function mostrarServicios(reservas) {
         <strong>${cantidad}</strong>
       </div>`
   ).join("");
+}
+
+function aplicarFiltros() {
+
+  const busqueda = document
+    .getElementById("buscarCliente")
+    .value.toLowerCase().trim();
+
+  const fecha = document
+    .getElementById("filtrarFecha")
+    .value;
+
+  const estado = document
+    .getElementById("filtrarEstado")
+    .value;
+
+  const filtradas = reservasGlobales.filter(r => {
+
+    const coincideBusqueda =
+      String(r.nombre || "").toLowerCase().includes(busqueda) ||
+      String(r.telefono || "").toLowerCase().includes(busqueda);
+
+    const coincideFecha =
+      !fecha || r.fecha === fecha;
+
+    const coincideEstado =
+      !estado || r.estado === estado;
+
+    return coincideBusqueda &&
+      coincideFecha &&
+      coincideEstado;
+  });
+
+  mostrarReservas(filtradas);
+
+  document.getElementById("mensajeReservas").textContent =
+    `Mostrando ${filtradas.length} de ${reservasGlobales.length} reservas.`;
+}
+
+function limpiarFiltros() {
+
+  document.getElementById("buscarCliente").value = "";
+  document.getElementById("filtrarFecha").value = "";
+  document.getElementById("filtrarEstado").value = "";
+
+  mostrarReservas(reservasGlobales);
+
+  document.getElementById("mensajeReservas").textContent =
+    "Filtros eliminados. Mostrando todas las reservas.";
 }
 
 // =====================================
