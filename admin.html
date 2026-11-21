@@ -813,7 +813,12 @@ function mostrarReservas(reservas) {
         </span>
       `;
     }
+const numeroWhatsApp = String(r.telefono || "")
+  .replace(/\D/g, "");
 
+const telefonoWhatsApp = numeroWhatsApp.startsWith("51")
+  ? numeroWhatsApp
+  : "51" + numeroWhatsApp;
     const claseEstado = {
       pendiente: "estado-pendiente",
       confirmada: "estado-confirmada",
@@ -840,8 +845,29 @@ function mostrarReservas(reservas) {
           ${escaparHTML(r.estado)}
         </td>
 
-        <td>${botones}</td>
+<td>
+  ${botones}
 
+  <br>
+
+  <a
+    href="https://wa.me/${telefonoWhatsApp}"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="
+      display:inline-block;
+      background:#247b48;
+      color:white;
+      padding:10px 12px;
+      border-radius:7px;
+      text-decoration:none;
+      font-weight:bold;
+      margin-top:6px;
+    "
+  >
+    WhatsApp
+  </a>
+</td>
       </tr>
     `;
 
