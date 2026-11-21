@@ -1,0 +1,13 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#0b0b0b"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#d4af37" stroke-width="12"/>
+  <g fill="none" stroke="#d4af37" stroke-width="22" stroke-linecap="round">
+    <path d="M190 170 L322 342"/>
+    <path d="M322 170 L190 342"/>
+    <circle cx="175" cy="150" r="40"/>
+    <circle cx="337" cy="150" r="40"/>
+    <path d="M190 170 L256 256 L322 170"/>
+  </g>
+  <text x="256" y="405" text-anchor="middle" font-size="38" font-weight="bold" fill="#d4af37">BARBER</text>
+</svg>

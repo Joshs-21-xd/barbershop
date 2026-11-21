@@ -6,7 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barbershop | Barbería Premium</title>
 
-    <link rel="stylesheet" href="style.css">
+<!-- CONFIGURACIÓN DE APLICACIÓN -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Barbershop">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -190,6 +199,19 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>       
     <script src="script.js"></script>
-
+<!-- REGISTRO DE LA APLICACIÓN -->
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js")
+            .then(() => {
+                console.log("Barbershop está lista para instalarse");
+            })
+            .catch((error) => {
+                console.error("Error al activar la app:", error);
+            });
+    });
+}
+</script>
 </body>
 </html>

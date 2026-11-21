@@ -5,7 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administración | Barbershop</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- CONFIGURACIÓN DE APLICACIÓN -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#d4af37">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Barbershop">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -932,6 +941,18 @@ async function cambiarEstado(id, estado) {
 comprobarSesion();
 
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js")
+            .then(() => {
+                console.log("Barbershop Admin está listo");
+            })
+            .catch(error => {
+                console.error("Error al activar la app:", error);
+            });
+    });
+}
+</script>
 </body>
 </html>
